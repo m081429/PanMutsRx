@@ -1,0 +1,479 @@
+#! /usr/bin/env bash
+#trap "exit 100; exit" ERR
+####################
+## Script Options ##
+####################
+
+#set -x
+
+usage ()
+{
+cat << EOF
+######################################################################
+##      script to do cleanup & build HTML main document
+## Script Options:
+##      -c      <configfile>      -       (REQUIRED)      required config file
+##      -r      <rundir>      -       (REQUIRED)      rundir
+##      -e      <email>      -       (REQUIRED)      email
+##      -i      <runid>      -       (REQUIRED)      runid
+##      -h      - Display this usage/help text (No arg)
+#############################################################################
+EOF
+}
+echo "Options specified: $@"
+
+while getopts "c:r:e:i:h" OPTION; do
+    case $OPTION in
+        c) config=$OPTARG ;;
+		r) rundir=$OPTARG ;;
+        e) EMAIL=$OPTARG ;;
+		i) RUNID=$OPTARG ;;
+        h) usage
+		exit ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "$config" ] || [ -z "$rundir" ] || [ -z "$EMAIL" ] || [ -z "$RUNID" ]; then
+    usage
+fi
+
+#loading the config file
+source $config
+source $WORKFLOW_PATH/shared_functions.sh
+if [ -z $SGE_TASK_ID ]
+then
+	SGE_TASK_ID=1
+fi
+
+cd $rundir
+
+#copying HTML directory
+cp -R $WORKFLOW_PATH/HTML .
+#loading toolinfo file
+source ./CONFIG/runinfo.txt
+source ./CONFIG/toolinfo.txt
+#rm -f *_NORMAL*.txt *_TUMOR*.txt
+find $rundir -name '*invalid_input'|xargs rm 2> /dev/null
+###create MainHTMLPage#####
+
+cat <<EOT > Main_Document.html
+<html><head><title>mRNAseq Main Document for SOMATIC WORKFLOW RUN</title><style>
+					*{
+						outline:none;
+					}
+					body{
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size: 14px;
+					}
+					img{
+						border:none;
+					}
+					p{
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size:14px;
+						color:#5e5e5e;
+						line-height:20px;
+						margin-bottom:5px;
+					}
+					a {
+						color: #0e94b6;
+						text-decoration: none;
+					}
+					table{
+						border-collapse: collapse;
+						border-spacing: 0px;
+						border: 1px solid black;
+						text-align : center;
+					}
+					table td{
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size: 14px;
+						border: 1px solid black;
+						padding: 5px 5px 5px 5px;
+						text-align : center;
+					}
+					table th{
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size: 16px;
+						font-variant: small-caps;
+						white-space:nowrap;
+						border: 1px solid black;
+						background-color: #edf3fe;
+						padding: 5px 5px 5px 5px;
+						text-align: center;
+					}
+					th.border, td.border {
+						border-bottom: 1px solid #666666;
+						border-right: 1px solid #666666;
+					}
+					.left {
+						text-align: left;
+					}
+					div {
+						padding: 0px 0px 10px 0px;
+					}
+					li.ques {
+						font-weight: bold;
+					}
+					li.ans {
+						list-style-type: none;
+						padding-bottom: 10px;
+					}
+					.heading{
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size: 16px;
+						font-weight: bold;
+						text-align: left;
+					}
+					.section {
+						padding: 15px 0px 0px 25px;
+					}
+					#pageTitle {
+						font-family: Arial, "Times New Roman", sans-serif;
+						font-size: 20px;
+						font-weight: bold;
+						text-align: center;
+					}
+					#top {
+						position: fixed;
+						right: 5px;
+						z-index: 999;
+						top: 40%;
+						color: #FF3300;
+					}
+					#top a {
+						color: #FF3300;
+					}
+					.note {
+						font-style: italic;
+						font-size: 12px;
+					}
+				</style><link rel="stylesheet" href="fancybox/source/jquery.fancybox.css?v=2.0.6" type="text/css" media="screen" />
+			<link rel="stylesheet" href="fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.2" type="text/css" media="screen" />
+			<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+			<script type="text/javascript" src="fancybox/source/jquery.fancybox.pack.js?v=2.0.6"></script>
+			<script type="text/javascript" src="fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.2"></script>
+
+			<script type="text/javascript">
+				\$(document).ready(function() {
+					\$(".fancybox").fancybox({
+								openEffect	: 'none',
+								closeEffect	: 'none'
+							});
+				});
+			</script>
+			<script src="./HTML/sorttable.js">
+			</script>
+			</head><body><div id='pageTitle'><a href="HTML/SomaticCallerWorkflow.pdf" target="_blank" name="DocumentStart">SOMATIC WORKFLOW 1.0</a></div><span id="top"><a href="#DocumentStart">[ TOP ]</a></span><div id="toc">
+				<span class="heading">Contents</span>
+				<div class="section">
+					<ul>
+						<li class="toclevel-1">
+							<a href="#InputConfigFiles"><span class="tocnumber">1</span>
+							<span class="toctext">Input ConfigFiles</span></a>
+						</li>
+						<ul>
+							<li class="toclevel-2">
+								<a href="#RunInfoConfigFile"><span class="tocnumber">1.1</span>
+								<span class="toctext">RunInfo Config File</span></a>
+							</li>
+						</ul>
+						<ul>
+							<li class="toclevel-2">
+								<a href="#ToolInfoConfigFile"><span class="tocnumber">1.2</span>
+								<span class="toctext">ToolInfo Config File</span></a>
+							</li>
+						</ul>
+						<li class="toclevel-1">
+							<a href="#AnalysisPlan"><span class="tocnumber">2</span>
+							<span class="toctext">Analysis Plan</span></a>
+						</li>
+						<li class="toclevel-1">
+							<a href="#Results"><span class="tocnumber">3</span>
+							<span class="toctext">Results</span></a>
+						</li>
+						<ul>
+							<li class="toclevel-2">
+								<a href="#AlignmentSummary"><span class="tocnumber">3.1</span>
+								<span class="toctext">Alignment Summary</span></a>
+							</li>
+						</ul>
+						<ul>
+							<li class="toclevel-2">
+								<a href="#VariantsSummary"><span class="tocnumber">3.1</span>
+								<span class="toctext">Variants Summary</span></a>
+							</li>
+						</ul>
+					</ul>
+				</div>
+			</div>
+<div>
+	<a name="InputConfigFiles" id="InputConfigFiles"></a>
+	<span class="heading">I. Input ConfigFiles: </span>
+	<a name="RunInfoConfigFile" id="RunInfoConfigFile"></a>
+	<div class="section"><a href="CONFIG/runinfo.txt" target="_blank">RunInfo Config File</a></div>
+	<!-- <div class="section"><object data="CONFIG/runinfo.txt" type="text/plain" width="1000" style="height: 150px"></object></div> -->
+	<a name="ToolInfoConfigFile" id="ToolInfoConfigFile"></a>
+	<div class="section"><a href="CONFIG/toolinfo.txt" target="_blank">ToolInfo Config File</a></div>
+	<!-- <div class="section"><object data="CONFIG/toolinfo.txt" type="text/plain" width="1000" style="height: 150px"></object></div> -->
+</div><br/>
+<div>
+	<a name="AnalysisPlan" id="AnalysisPlan"></a>
+	<span class="heading">II. Analysis Plan:</span>
+	<div class="section"><p align="center"><img src="HTML/WorkflowLayout.jpg" width="1000"></p></div>
+</div><br/><br/>
+<div>
+	<a name="Results" id="Results"></a>
+	<span class="heading">III.  Results:</span>
+	<div class="section"><p align="center"><img src="HTML/OutputLayout.jpg" width="1000"></p></div><br/> 
+	<a name="AlignmentSummary" id="AlignmentSummary"></a>
+	<div class="section"><a href="HTML/samstats.txt" target="_blank">Alignment Summary</a></div>
+	<div class="section"><table border="1" style="width:100%" class="sortable"><tr>
+	<th>Sample</th>
+	<th>Total(QC-passed+QC-failed)</th>
+	<th>Secondary</th>
+	<th>Supplementary</th>
+	<th>Duplicates</th>
+	<th>Mapped</th>
+	<th>Paired</th>
+	<th>Read1</th>
+	<th>Read2</th>
+	<th>ProperlyPaired</th>
+	<th>WithItself&MatemApped</th>
+	<th>Singletons</th>
+	<th>WithMatemappedToDiffChr</th>
+	<th>WithMatemappedToDiffChr(mapQ>=5)</th>
+	</tr>
+
+EOT
+
+#generating samtools alignment stats 
+echo -e "Sample\tTotal(QC-passed+QC-failed)\tSecondary\tSupplementary\tDuplicates\tMapped\tPaired\tRead1\tRead2\tProperlyPaired\tWithItself&MatemApped\tSingletons\tWithMatemappedToDiffChr\tWithMatemappedToDiffChr(mapQ>=5)" > HTML/samstats.txt
+for i in `find $rundir -name '*gatkin.bam' -o -name '*.recaliber.bam'|sort`
+do
+	samp=`basename $i`
+	val=`$SAMTOOLS flagstat $i|cut -f1-3 -d ' '|tr '\n' '\t'||sed -s 's/\t$//g'`
+	echo -e "$samp\t$val" >> HTML/samstats.txt
+done
+cat HTML/samstats.txt|grep -v "WithMatemappedToDiffChr"|awk -F "\t" 'BEGIN {print ""} {print "<tr>"; for(i = 1; i <= NF; i++) print "<td>" $i "</td>"; print "</tr>"} END {print ""}'  >>Main_Document.html
+
+cat <<EOT >> Main_Document.html
+</table></div><br/>
+<!--	<div class="section"><object data="HTML/samstats.html" type="text/html"  width="1200" style="height: 3000px"></object></div> -->
+EOT
+#generating variant caller Statistics
+if [ "$CALLERS" != "NA" ]
+then
+cat <<EOT >> Main_Document.html
+	<a name="VariantsSummary" id="VariantsSummary"></a>
+	<div class="section"><a href="HTML/VariantSummary.txt" target="_blank">Variant Summary</a></div>
+	<div class="section"><table border="1" style="width:100%" class="sortable"><tr>
+	<th>Sample</th>
+	<th>VariantCaller</th>
+	<th>Event Type(SNP/INDEL)</th>
+	<th>SOMATIC CALLS(YES/NO)</th>
+	<th>Number of Events in RawOutput</th>
+	<th>Number of Events in FilteredOutput</th>
+</tr>
+EOT
+
+
+	echo -e "Sample\tVariantCaller\tEvent Type(SNP/INDEL)\tSOMATIC CALLS(YES/NO)\tNumber of Events in RawOutput\tNumber of Events in FilteredOutput" > HTML/VariantSummary.txt
+	if [[ "$CALLERS" =~ "GATK" ]]
+	then
+		for i in `find $rundir/SNVINDEL -name '*.GATK.Filtered.*.vcf'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.GATK.Filtered.*.vcf//g'`
+			fil=`grep -v '#' $i|wc -l`
+			unfil=`grep -v '#' $i|grep "PASS"|wc -l`
+			echo -e "$samp\tGATK\tSNP/INDEL\tNO\t$fil\t$unfil" >> HTML/VariantSummary.txt
+			echo -e "<tr><td><a href=\"SNVINDEL/\" target=\"_blank\">$samp</a></td><td>GATK</td><td>SNP/INDEL</td><td>NO</td><td>$fil</td><td>$unfil</td></tr>" >> Main_Document.html
+		done
+	fi
+	#BCFTOOLS single sample
+	if [[ "$CALLERS" =~ "BCFTOOLS" ]]
+	then
+		for i in `find $rundir/SNVINDEL -name '*.bcftools.*.vcf'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.bcftools.*.vcf//g'`
+			fil=`grep -v '#' $i|wc -l`
+			#unfil=`grep -v '#' $i|grep "PASS"|wc -l`
+			unfil="NA"
+			echo -e "$samp\tBCFTOOLS\tSNP/INDEL\tNO\t$fil\t$unfil" >> HTML/VariantSummary.txt
+			echo -e "<tr><td><a href=\"SNVINDEL/\" target=\"_blank\">$samp</a></td><td>BCFTOOLS</td><td>SNP/INDEL</td><td>NO</td><td>$fil</td><td>$unfil</td></tr>" >> Main_Document.html
+		done
+	fi
+	#VARSCAN single sample
+	if [[ "$CALLERS" =~ "VARSCAN" ]]
+	then
+		for i in `find $rundir/SNVINDEL -name '*.varscan.snp'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.varscan.snp//g'`
+			snp=`basename $i`
+			snpfilter=`basename $i|sed -s 's/.varscan.snp/.varscan.snp.filter/g'`
+			indel=`basename $i|sed -s 's/.varscan.snp/.varscan.indel/g'`
+			indelfilter=`basename $i|sed -s 's/.varscan.snp/.varscan.indel.filter/g'`
+			countsnp=`cat $rundir/SNVINDEL/$snp|grep -v "Chrom"|wc -l`
+			countindel=`cat $rundir/SNVINDEL/$indel|grep -v "Chrom"|wc -l`
+			countsnpfilter=`cat $rundir/SNVINDEL/$snpfilter|grep -v "Chrom"|wc -l`
+			countindelfilter=`cat $rundir/SNVINDEL/$indelfilter|grep -v "Chrom"|wc -l`
+			echo -e "$samp\tVARSCAN\tSNP\tNO\t$countsnp\t$countsnpfilter" >> HTML/VariantSummary.txt
+			echo -e "$samp\tVARSCAN\tINDEL\tNO\t$countindel\t$countindelfilter" >> HTML/VariantSummary.txt
+			echo -e "<tr><td><a href=\"SNVINDEL/\" target=\"_blank\">$samp</a></td><td>VARSCAN</td><td>SNP</td><td>NO</td><td>$countsnp</td><td>$countsnpfilter</td></tr>" >> Main_Document.html
+			echo -e "<tr><td><a href=\"SNVINDEL/\" target=\"_blank\">$samp</a></td><td>VARSCAN</td><td>INDEL</td><td>NO</td><td>$countindel</td><td>$countindelfilter</td></tr>" >> Main_Document.html
+		done
+	fi
+	#VARSCAN Somatic 
+	if [[ "$CALLERS" =~ "VARSCAN_SOMATIC" ]]
+	then
+		for i in `find $rundir/SOMATIC_SNVINDEL -name '*.somatic.varscan.snp'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.somatic.varscan.snp//g'`
+			snp=`basename $i`
+			snpfilter=`basename $i|sed -s 's/.somatic.varscan.snp/.somatic.varscan.snp.filter/g'`
+			indel=`basename $i|sed -s 's/.somatic.varscan.snp/.somatic.varscan.indel/g'`
+			indelfilter=`basename $i|sed -s 's/.somatic.varscan.snp/.somatic.varscan.indel.filter/g'`
+			countsnp=`cat $rundir/SOMATIC_SNVINDEL/$snp|grep -v "Chrom"|wc -l`
+			countindel=`cat $rundir/SOMATIC_SNVINDEL/$indel|grep -v "Chrom"|wc -l`
+			countsnpfilter=`cat $rundir/SOMATIC_SNVINDEL/$snpfilter|grep -v "Chrom"|wc -l`
+			countindelfilter=`cat $rundir/SOMATIC_SNVINDEL/$indelfilter|grep -v "Chrom"|wc -l`
+			echo -e "$samp\tVARSCAN\tSNP\tNO\t$countsnp\t$countsnpfilter" >> HTML/VariantSummary.txt
+			echo -e "$samp\tVARSCAN\tINDEL\tNO\t$countindel\t$countindelfilter" >> HTML/VariantSummary.txt
+			echo -e "<tr><td><a href=\"SOMATIC_SNVINDEL/\" target=\"_blank\">$samp</a></td><td>VARSCAN</td><td>SNP</td><td>YES</td><td>$countsnp</td><td>$countsnpfilter</td></tr>" >> Main_Document.html
+			echo -e "<tr><td><a href=\"SOMATIC_SNVINDEL/\" target=\"_blank\">$samp</a></td><td>VARSCAN</td><td>INDEL</td><td>YES</td><td>$countindel</td><td>$countindelfilter</td></tr>" >> Main_Document.html
+		done
+	fi
+	#STRELKA Somatic 
+	if [[ "$CALLERS" =~ "STRELKA_SOMATIC" ]]
+	then
+		for i in `find $rundir/SOMATIC_SNVINDEL -name '*.strelka.all.somatic.snvs*.vcf'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.strelka.all.somatic.snvs*.vcf//g'`
+			snp=`basename $i`
+			snpfilter=`basename $i|sed -s 's/all.somatic.snvs.vcf/passed.somatic.snvs*.vcf/g'`
+			indel=`basename $i|sed -s 's/all.somatic.snvs.vcf/all.somatic.indels*.vcf/g'`
+			indelfilter=`basename $i|sed -s 's/all.somatic.snvs.vcf/passed.somatic.indels*.vcf/g'`
+			countsnp=`cat $rundir/SOMATIC_SNVINDEL/$snp|grep -v "#"|wc -l`
+			countindel=`cat $rundir/SOMATIC_SNVINDEL/$indel|grep -v "#"|wc -l`
+			countsnpfilter=`cat $rundir/SOMATIC_SNVINDEL/$snpfilter|grep -v "#"|wc -l`
+			countindelfilter=`cat $rundir/SOMATIC_SNVINDEL/$indelfilter|grep -v "#"|wc -l`
+			echo -e "$samp\tVARSCAN\tSNP\tNO\t$countsnp\t$countsnpfilter" >> HTML/VariantSummary.txt
+			echo -e "$samp\tVARSCAN\tINDEL\tNO\t$countindel\t$countindelfilter" >> HTML/VariantSummary.txt
+			echo -e "<tr><td><a href=\"SOMATIC_SNVINDEL/\" target=\"_blank\">$samp</a></td><td>STRELKA</td><td>SNP</td><td>YES</td><td>$countsnp</td><td>$countsnpfilter</td></tr>" >> Main_Document.html
+			echo -e "<tr><td><a href=\"SOMATIC_SNVINDEL/\" target=\"_blank\">$samp</a></td><td>STRELKA</td><td>INDEL</td><td>YES</td><td>$countindel</td><td>$countindelfilter</td></tr>" >> Main_Document.html
+		done
+	fi
+cat <<EOT >> Main_Document.html
+</table></div><br/>
+EOT
+	#ANNOVAR 
+	echo -e "Sample\tdownstream\texonic\texonic"'\\x'"3bsplicing\tintergenic\tintronic\tncRNA_exonic\tncRNA_intronic\tsplicing\tupstream\tupstream"'\\x3'"bdownstream\tUTR3\tUTR5" > HTML/AnnovarSummary.txt
+	if [ "$ANNOVAR_OPTION" != "NA" ] && [ "$ANNOVAR_OPTION" != "na" ] 
+	then
+		for i in `find $rundir/ -name '*ANNOVAR.vcf'|sort`
+		do
+			name=`basename $i`
+			samp=$name
+			#samp=`basename $i|sed -s 's/.strelka.all.somatic.snvs*.vcf//g'`
+			downstream=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "downstream"|wc -l`
+			exonic=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "exonic"|wc -l`
+			exonic_splicing=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "bsplicing"|wc -l`
+			intergenic=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "intergenic"|wc -l`
+			intronic=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "intronic"|wc -l`
+			ncRNA_exonic=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "ncRNA_exonic"|wc -l`
+			ncRNA_intronic=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "ncRNA_intronic"|wc -l`
+			splicing=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "splicing"|wc -l`
+			upstream=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "upstream"|wc -l`
+			upstream_downstream=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "bdownstream"|wc -l`
+			UTR3=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "UTR3"|wc -l`
+			UTR5=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'Func.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "UTR5"|wc -l`
+			echo -e "$samp\t$downstream\t$exonic\t$exonic_splicing\t$intergenic\t$intronic\t$ncRNA_exonic\t$ncRNA_intronic\t$splicing\t$upstream\t$upstream_downstream\t$UTR3\t$UTR5">> HTML/AnnovarSummary.txt
+		done
+cat <<EOT >> Main_Document.html
+	<a name="ANNOVARSummary" id="AnnovarSummary"></a>
+	<div class="section"><a href="HTML/AnnovarSummary.txt" target="_blank">Annovar Summary</a></div>
+	<div class="section"><table border="1" style="width:100%" class="sortable"><tr>
+	<th>Sample</th>
+	<th>downstream</th>
+	<th>exonic</th>
+	<th>exonic\x3bsplicing</th>
+	<th>intergenic</th>
+	<th>intronic</th>
+	<th>ncRNA_exonic</th>
+	<th>ncRNA_intronic</th>
+	<th>splicing</th>
+	<th>upstream</th>
+	<th>upstream\x3bdownstream</th>
+	<th>UTR3</th>
+	<th>UTR5</th>
+	</tr>
+EOT
+cat HTML/AnnovarSummary.txt|grep -v "Sample"|awk -F "\t" 'BEGIN {print ""} {print "<tr>"; for(i = 1; i <= NF; i++) print "<td>" $i "</td>"; print "</tr>"} END {print ""}'  >>Main_Document.html
+cat <<EOT >> Main_Document.html
+</table></div><br/>
+EOT
+		#ANNOVAR FUNCTION
+		echo -e "Sample\tframeshift_deletion\tframeshift_insertion\tnonframeshift_deletion\tnonframeshift_insertion\tnonsynonymous_SNV\tstopgain\tstoploss\tsynonymous_SNV\tunknown" > HTML/AnnovarSummaryFunc.txt
+		for i in `find $rundir/ -name '*ANNOVAR.vcf'|sort`
+		do
+			samp=`basename $i|sed -s 's/.strelka.all.somatic.snvs*.vcf//g'`
+			frameshift_deletion=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "frameshift_deletion"|wc -l`
+			frameshift_insertion=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "frameshift_insertion"|wc -l`
+			nonframeshift_deletion=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "nonframeshift_deletion"|wc -l`
+			nonframeshift_insertion=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "nonframeshift_insertion"|wc -l`
+			nonsynonymous_SNV=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "nonsynonymous_SNV"|wc -l`
+			stopgain=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "stopgain"|wc -l`
+			stoploss=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "stoploss"|wc -l`
+			synonymous_SNV=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "synonymous_SNV"|wc -l`
+			unknown=`grep -v '#' $i|cut -f8|sed -e 's/ref/ens/g'|sed -e 's/known/ens/g'|awk -F 'ExonicFunc.ensGene=' '{print $2}'|cut -f1 -d ';'|sort|grep "unknown"|wc -l`
+			echo -e "$samp\t$frameshift_deletion\t$frameshift_insertion\t$nonframeshift_deletion\t$nonframeshift_insertion\t$nonsynonymous_SNV\t$stopgain\t$stoploss\t$synonymous_SNV\t$unknown">> HTML/AnnovarSummaryFunc.txt
+		done
+cat <<EOT >> Main_Document.html
+	<a name="ANNOVARSummaryFunc" id="AnnovarSummaryFunc"></a>
+	<div class="section"><a href="HTML/AnnovarSummaryFunc.txt" target="_blank">Annovar Func Summary</a></div>
+	<div class="section"><table border="1" style="width:100%" class="sortable"><tr>
+	<th>Sample</th>
+	<th>frameshift_deletion</th>
+	<th>frameshift_insertion</th>
+	<th>nonframeshift_deletion</th>
+	<th>nonframeshift_insertion</th>
+	<th>nonsynonymous_SNV</th>
+	<th>stopgain</th>
+	<th>stoploss</th>
+	<th>synonymous_SNV</th>
+	<th>unknown</th>
+	</tr>
+EOT
+		cat HTML/AnnovarSummaryFunc.txt|grep -v "Sample"|awk -F "\t" 'BEGIN {print ""} {print "<tr>"; for(i = 1; i <= NF; i++) print "<td>" $i "</td>"; print "</tr>"} END {print ""}'  >>Main_Document.html
+
+cat <<EOT >> Main_Document.html
+</table></div><br/>
+EOT
+	fi
+find $rundir -name '*idx'|xargs rm 2> /dev/null
+if [[ "$COMPRESS_VARIANT_OUTPUT" =~ "YES" ]] || [[ "$COMPRESS_VARIANT_OUTPUT" =~ "yes" ]]
+then
+	find $rundir -name '*vcf'|xargs gzip 2> /dev/null
+	find $rundir -name '*snp'|xargs gzip 2> /dev/null
+	find $rundir -name '*indel'|xargs gzip 2> /dev/null
+	find $rundir -name '*filter'|xargs gzip 2> /dev/null
+fi 	
+cat <<EOT >> Main_Document.html
+	</table></div><br/>
+EOT
+fi
+
+cat <<EOT >> Main_Document.html
+</body></html>
+EOT

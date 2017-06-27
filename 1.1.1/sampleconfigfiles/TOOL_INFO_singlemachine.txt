@@ -1,0 +1,59 @@
+JAVA=/usr/local/biotools/java/jdk1.8.0_20/bin/java
+PYTHON=/usr/local/biotools/python/3.4.3/bin/python3
+PERL=/usr/local/biotools/perl/5.16.2-centos6/bin/perl
+SH=/bin/bash
+WORKFLOW_PATH=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1.1/
+STAR_FUSION_PERL_PACKAGE=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/STARFUSION/PERLPACKAGE/lib/lib/site_perl/5.16.2/x86_64-linux/
+QSUB=NA
+STAR=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/STAR/STAR-2.5.2b/bin/Linux_x86_64/STAR
+GSNAP=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/GSNAP/gmap-2014-12-31/bin/gsnap
+SAMTOOLS=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/SAMTOOLS/samtools-1.3.1/samtools
+HTSDIR=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/HTSDIR/htslib-1.3.2/bin
+FEATURECOUNTS=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/FEATURECOUNTS/subread-1.5.1-Linux-x86_64/bin/featureCounts
+BCFTOOLS=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/BCFTOOLS/bcftools-1.3.1/bin/bcftools
+SAMBLASTER=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/SAMBLASTER/samblaster-master/samblaster
+SAMBAMBA=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/SAMBAMBA/sambamba_v0.6.4
+PICARD=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/PICARD/picard.jar
+GATK=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/GATK/GenomeAnalysisTK.jar
+ANNOVAR=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/ANNOVAR/annovar
+STRELKA_WORKFLOW=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/STRELKA/strelka_workflow-1.0.15
+STAR_FUSION=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/STARFUSION/STAR-Fusion/STAR-Fusion
+BEDTOOLS=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/BEDTOOLS/bedtools2/bin/
+SAMBLASTER_OPTIONS=" "
+PICARD_ARG_OPTION="SO=coordinate RGID=group1 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=sample1"
+STAR_OPTION="--runThreadN 4"
+STAR_OPTION_STEP2="--chimSegmentMin 12 --chimJunctionOverhangMin 12 --alignSJDBoverhangMin 10 --alignMatesGapMax 200000 --alignIntronMax 200000 --limitBAMsortRAM 31532137230 --outSAMstrandField intronMotif --outSAMtype BAM Unsorted"
+GSNAP_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+GATK_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+GATK_SPLITNCIGAR_OPT="-RMQF 255 -RMQT 60"
+GATK_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+DEBUG=NO
+REMOVE_DUP_READS="TRUE"
+ANNOVAR_QUEUE=1-day
+ANNOVAR_MEM=30G
+BCFTOOLS_OPTIONS=""
+SAMTOOLS_BCFTOOLS_OPTIONS=" -q 20"
+DELETE_BAM_POST_GATK_PROCESS=YES
+SAMBAMBA_PARAM="  -m 12GB -t 4 "
+GSNAP_QUEUE=4-days
+GSNAP_MEM=30G
+STAR_QUEUE=lg-mem
+STAR_MEM=50G
+GATK_QUEUE=4-days
+GATK_MEM=30G
+BCFTOOLS_QUEUE=4-days
+BCFTOOLS_MEM=30G
+STRELKA_QUEUE=4-days
+STRELKA_MEM=30G
+STAR_QUEUE=4-days
+STAR_MEM=30G
+STRELKA_CONFIG=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/install_tools1/STRELKA/strelka_workflow-1.0.15/strelka_demo_config.ini
+REF_GENOME=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/GRCh37_gencode_v19_CTAT_lib_July272016/ref_genome.fa
+GATK_BASE_RECALIBRATION_KNOWNSITES="-knownSites /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/1000G_phase1.snps.high_confidence.hg19.sites.vcf.gz -knownSites /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz -knownSites /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/dbsnp_138.hg19.excluding_sites_after_129.vcf.gz"
+STAR_REF=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/STAR
+GSNAP_OPTION="-t 4 -A sam -D /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/GSNAP -d GSNAP --use-splicing=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/GSNAP/GSNAP.maps/gencode.v19.splicesites.iit -N 1 --read-group-id=group1 --read-group-name=sample1 --read-group-library=lib1 --read-group-platform=illumina"
+GATK_HAPLOTYPE_CALLER_OPTION=" -dontUseSoftClippedBases -stand_call_conf 20.0  -ERCIS 50 -pcrModel HOSTILE  -stand_emit_conf 20.0  -mmq 20 -L /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/coding.bed "
+ANNOVAR_OPTION="/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/ANNOVAR_humandb/ -buildver hg19 -remove -protocol refGene -operation g -nastring ."
+STAR_FUSION_CTAT_LIB=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/GRCh37_gencode_v19_CTAT_lib_July272016
+FEATURECOUNTS_OPTION="-t exon -g gene_name -a /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/ref_files/Homo_sapiens.GRCh37.75.gtf"
+STARFUSION_MITO_FILTER="YES"

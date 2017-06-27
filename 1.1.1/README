@@ -1,0 +1,18 @@
+The users should have some basic bioinformatics and linux skills to use this Workflow. Users can run the workflow on a cluster[Tested on Open Grid Engine not tested on SGE and PBS] or on single machine (High memory > 40GB is required for one or more tools used in the workflow)
+
+(i) First is to install the tools. So please run the "INSTALL_TOOLS.sh" script to install required tools (required example config file is provided in the "source_package/tool_install_config.txt") and output file (Workflow tool info file) is produced
+Run time: few minutes
+Space required: 4GB
+(ii) As a second step,run the "PREPARE_REF_FILES.sh" script to prepare reference files 
+input: Tool info file produced from tool install script
+output: More parameters are added to the  Tool info file
+Run Time: Several hours
+Space required:130GB
+(iii) example config files are provides
+Cluster example: /sampleconfigfiles/sample_cluster_config/SomaticCaller_cluster.sh
+Single machine run: /sampleconfigfiles/sample_singlemachine_config/SomaticCaller_singlemachine.sh
+sample fastq files: /sampleconfigfiles/sample_fastq_files/
+Number of samples: 1 simulated normal and tumor sample
+Number of reads in the simulated fastq file:4 million reads pairs in each sample
+Run time on cluster: few hours
+space required to run this sample fastq file:2 GB of output files (more space is required to run all the jobs)

@@ -1,0 +1,64 @@
+PYTHON=/usr/local/biotools/python/3.4.3/bin/python3
+SAMBLASTER=/data2/labdev/mgf/dev/tools/samblaster/samblaster/samblaster
+SAMBLASTER_OPTIONS=" "
+SAMTOOLS=/data2/labdev/mgf/dev/tools/htslib-1.2.1/samtools
+PICARD=/data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/STAR/PICARD/picard-tools-1.128/picard.jar
+PICARD_ARG_OPTION="SO=coordinate RGID=group1 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=sample1"
+JAVA=/usr/java/jdk1.7.0_03/bin/java
+GATK=/data2/labdev/mgf/dev/tools/gatk/nightbuild/GenomeAnalysisTK.jar
+GATK_KEY=/projects/bsi/bictools/apps/alignment/GenomeAnalysisTK/3.1-1/Hossain.Asif_mayo.edu.key
+REF_GENOME=/data2/labdev/mgf/dev/references/hg19/37.1_allchr.fa
+GATK_BASE_RECALIBRATION_KNOWNSITES="-knownSites /data2/bsi/reference/annotation/1KGenome/1000G_phase1.snps.high_confidence.hg19.vcf.gz -knownSites /data2/bsi/reference/annotation/dbSNP/hg19/dbsnp_137.hg19.vcf.gz -knownSites /data2/bsi/reference/annotation/1KGenome/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz"
+GSNAP=/data2/labdev/mgf/dev/tools/gsnap/gmap-2014-12-29/bin/gsnap
+#GSNAP=/data2/bsi/staff_analysis/zxs01/tools/gmap-2014-12-20/bin/gsnap
+#STAR=/data2/external_data/Kocher_Jean-Pierre_m026645/s113787.SL1_RNA/SL1_RNA_analyses_2015/GATK_bestpractises_indel_detection/STAR
+STAR=/data5/bsi/bictools/src/star/2.4.2a/bin/Linux_x86_64/STAR
+GSNAP_QUEUE=4-days
+GSNAP_MEM=30G
+STAR_QUEUE=lg-mem
+STAR_MEM=50G
+GATK_QUEUE=4-days
+GATK_MEM=30G
+VARSCAN_QUEUE=4-days
+VARSCAN_MEM=30G
+BCFTOOLS_QUEUE=4-days
+BCFTOOLS_MEM=30G
+STRELKA_QUEUE=4-days
+STRELKA_MEM=30G
+STAR_OPTION="--runThreadN 4"
+STAR_OPTION_STEP2="--chimSegmentMin 12 --chimJunctionOverhangMin 12 --alignSJDBoverhangMin 10 --alignMatesGapMax 200000 --alignIntronMax 200000 --limitBAMsortRAM 31532137230 --outSAMstrandField intronMotif --outSAMtype BAM Unsorted"
+STAR_REF="/data2/labdev/mgf/dev/references/hg19/star/hg19"
+GSNAP_OPTION="-t 4 -A sam -D /data2/labdev/mgf/dev/references/hg19/gmapref/hg19 -d hg19 --use-splicing=/data2/labdev/mgf/dev/references/hg19/gmapref/hg19/hg19.maps/gencode.v18.splicesites.iit -N 1 --read-group-id=group1 --read-group-name=sample1 --read-group-library=lib1 --read-group-platform=illumina"
+#GSNAP_OPTION="-t 4 -A sam -D /data2/bsi/staff_analysis/zxs01/refdata/hg19/gmapref/hg19 -d hg19 --use-splicing=/data2/bsi/staff_analysis/zxs01/refdata/hg19/gmapref/hg19/hg19.maps/gencode.v18.splicesites.iit -N 1"
+GSNAP_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+GATK_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+STAR_QUEUE=4-days
+STAR_MEM=30G
+SH=/bin/bash
+GATK_SPLITNCIGAR_OPT="-RMQF 255 -RMQT 60"
+BAMTOOLS=/projects/bsi/bictools/apps/alignment/bamtools/bin/bamtools
+GATK_JAVA_OPTION="-XX:CompileThreshold=1000 -XX:ReservedCodeCacheSize=128m -Xmx20g -Xms5g"
+GATK_HAPLOTYPE_CALLER_OPTION=" -dontUseSoftClippedBases -stand_call_conf 20.0  -ERCIS 50 -pcrModel HOSTILE  -stand_emit_conf 20.0  -mmq 20 -L /projects/bsi/bictools/apps/variant_detection/rvboost/RVboost_0.1/resources/coding.bed "
+QSUB=/home/oge/ge2011.11/bin/linux-x64/qsub
+VARSCAN=/data2/labdev/mgf/dev/tools/VarScan/VarScan.v2.3.7.jar
+STRELKA_WORKFLOW=/data2/labdev/mgf/dev/tools/strelka/strelka_workflow-1.0.14
+STRELKA_CONFIG=/data2/labdev/mgf/dev/tools/strelka/strelka_workflow-1.0.14/demo/strelka_demo_config.ini
+PERL=/usr/local/biotools/perl/5.18.1/bin/perl
+WORKFLOW_PATH=/data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0
+VARSCAN_FILTER_OPTIONS="-–min-reads2 4 –-min-var-freq 0.15 –-p-value 0.05"
+DEBUG=NO
+NOVOSORT=/projects/bsi/bictools/apps/alignment/novoalign/3.02.04/novosort
+NOVOSORT_PARAM=" --ram 12G --tmpcompression 0 --threads 4 -f"
+REMOVE_DUP_READS="TRUE"
+ANNOVAR=/data2/labdev/mgf/dev/tools/ANNOVAR/annovar
+ANNOVAR_OPTION="/data2/labdev/mgf/dev/references/hg19/ANNOVAR_humandb/ -buildver hg19 -remove -protocol refGene -operation g -nastring ."
+#ANNOVAR_OPTION="/data2/labdev/mgf/dev/references/hg19/ANNOVAR_humandb/ -buildver hg19 -remove -protocol ensGene,tfbsConsSites,cytoBand,targetScanS,genomicSuperDups,dgvMerged,gwasCatalog,wgEncodeBroadHmmGm12878HMM,ALL.sites.2012_04,snp138,ljb23_sift,esp6500si_all,exac03,gerp++gt2,clinvar_20140211,cosmic68 -operation g,r,r,r,r,r,r,r,f,f,f,f,f,f,f,f -nastring ."
+ANNOVAR_QUEUE=1-day
+ANNOVAR_MEM=30G
+BCFTOOLS=/data2/labdev/mgf/dev/tools/htslib-1.2.1/bcftools
+BCFTOOLS_OPTIONS=""
+SAMTOOLS_BCFTOOLS_OPTIONS=" -q 20"
+DELETE_BAM_POST_GATK_PROCESS=NO
+STAR_FUSION_OUTPUT=YES
+STAR_FUSION=/data2/labdev/mgf/dev/tools/star_fusion/STAR-Fusion-master/STAR-Fusion
+STAR_FUSION_CTAT_LIB=/data2/labdev/mgf/dev/references/hg19/Hg19_CTAT_resource_lib

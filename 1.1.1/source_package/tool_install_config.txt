@@ -1,0 +1,8 @@
+TAR=/bin/tar
+UNZIP=/usr/bin/unzip
+BZIP2=/usr/bin/bzip2
+JAVA=/usr/local/biotools/java/jdk1.8.0_20/bin/java
+PERL=/usr/local/biotools/perl/5.16.2-centos6/bin/perl
+PYTHON=/usr/local/biotools/python/3.4.3/bin/python3
+SH=/bin/bash
+QSUB=/home/oge/ge2011.11/bin/linux-x64/qsub

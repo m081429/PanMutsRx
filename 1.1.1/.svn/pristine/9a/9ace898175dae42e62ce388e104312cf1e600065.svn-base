@@ -1,0 +1,28 @@
+#! /bin/bash
+#WORKFLOW_PATH=`dirname $(readlink -f $0)`
+#echo $WORKFLOW_PATH
+#if [ -z $SGE_TASK_ID ]
+#then
+#	SGE_TASK_ID=1
+#fi
+#echo $SGE_TASK_ID
+#WORKFLOW_PATH=`dirname $0`
+#source $WORKFLOW_PATH/shared_functions.sh
+#check_variable 1 $0 "sameple" "initial" prodduturi.naresh@mayo.edu
+#inputfastq=fastq.gz
+#DEBUG=NO
+#if [ $DEBUG != "YES" ] || [ $DEBUG != "yes" ]
+#then
+#	echo "sucess"
+#fi
+#kk="NA"
+#if echo $kk | grep -iq "na"; then
+#    echo it works
+#fi
+#ANNOVAR_OPTION="/data2/labdev/mgf/dev/references/hg19/ANNOVAR_humandb/ -buildver hg19 -remove -protocol ensGene,tfbsConsSites,cytoBand,targetScanS,genomicSuperDups,dgvMerged,gwasCatalog,wgEncodeBroadHmmGm12878HMM,ALL.sites.2012_04,snp138,ljb23_sift,esp6500si_all,exac03,gerp++gt2,clinvar_20140211,cosmic68 -operation g,r,r,r,r,r,r,r,f,f,f,f,f,f,f,f -nastring ."
+#if [ "$ANNOVAR_OPTION" != "NA" ] && [ "$ANNOVAR_OPTION" != "na" ]
+#then
+#	echo "sucess"
+#fi
+source /data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0/shared_functions.sh
+annovar /data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0/sampleconfigfiles/toolinfo.txt /data2/labdev/mgf/dev/aditya_test_somatic_caller_chr7/output_new/SNVINDEL chr7normal_R1.GSNAP.gatkin.splitNC.realign.recaliber.GATK.Filtered.vcf 

@@ -1,0 +1,1 @@
+ /usr/local/biotools/python/3.4.3/bin/python3 /data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0/SomaticCaller.py -r /data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0/sampleconfigfiles/runinfo.txt -t /data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow/1.0/sampleconfigfiles/toolinfo.txt > SecondRun.log

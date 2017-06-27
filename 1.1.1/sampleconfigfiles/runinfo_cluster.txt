@@ -1,0 +1,7 @@
+SINGLE_FASTQ=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1/sampleconfigfiles/STAR_FASTQ_NORMAL.txt
+PROCESSDIR=/data2/labdev/mgf/dev/naresh/MGF/RNASEQ_DELETION/INDEL_SOMATICSNV/Workflow_data/new_run_codingregion10/
+PAIRED_FASTQ=/data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1/sampleconfigfiles/STAR_FASTQ_TUMOR.txt
+EMAIL=prodduturi.naresh@mayo.edu
+RUNID=sample12
+ALIGNERS=GSNAP,STAR
+CALLERS=GATK,STRELKA_SOMATIC,STAR_FUSION,FEATURECOUNTS

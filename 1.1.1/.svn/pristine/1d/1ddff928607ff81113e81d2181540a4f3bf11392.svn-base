@@ -1,0 +1,50 @@
+#! /usr/bin/env bash
+#trap "exit 100; exit" ERR
+####################
+## Script Options ##
+####################
+
+function check_variable () {
+        exitcode=$1
+	scriptname=$2
+	samplename=$3
+	step=$4
+	email=$5
+	runid=$6
+	outputfile=$7
+	if [ -z "$outputfile" ]
+	then 
+		if [ $exitcode -ne 0 ]
+		then
+			echo "script:$scriptname step:$step" |mail -s  "WorkFlow:Somatic Caller workflow Status:failed  RUNID:$runid Sample:$samplename " $email
+			exit 100
+		fi
+	else
+		if [ $exitcode -ne 0 ] || [ ! -f $outputfile ]
+		then
+			echo "script:$scriptname step:$step" |mail -s  "WorkFlow:Somatic Caller workflow Status:failed  RUNID:$runid Sample:$samplename " $email
+			exit 100
+		fi
+	fi
+}
+
+#Annovar function
+function annovar () {
+	set -x
+	tool_info=$1
+	rundir=$2
+	gatkFilOut=$3
+	
+	source $tool_info
+	
+	cd $rundir
+	vcfout=`echo $gatkFilOut|sed -s 's/.vcf/.ANNOVAR/g'`
+	
+	$SH $WORKFLOW_PATH/WRAPPER.sh "$PERL $ANNOVAR/table_annovar.pl -out $rundir/$vcfout -vcfinput $rundir/$gatkFilOut $ANNOVAR_OPTION"
+	check_variable $? $0 $sampname "ANNOVAR step" $EMAIL $RUNID
+	if [ $DEBUG != "YES" ] && [ $DEBUG != "yes" ]
+	then
+			rm $gatkFilOut $vcfout.hg19_multianno.txt $vcfout.avinput
+	fi
+	mv $vcfout.hg19_multianno.vcf $vcfout.vcf
+}

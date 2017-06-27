@@ -1,0 +1,1 @@
+/usr/local/biotools/python/3.4.3/bin/python3 /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1.1/SomaticCaller.py -r /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1.1/sampleconfigfiles/runinfo_cluster.txt -t /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1.1/sampleconfigfiles/TOOL_INFO_cluster.txt

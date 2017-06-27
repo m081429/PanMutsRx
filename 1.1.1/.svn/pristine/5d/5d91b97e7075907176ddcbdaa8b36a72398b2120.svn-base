@@ -1,0 +1,73 @@
+#! /usr/bin/env bash
+#trap "exit 100; exit" ERR
+####################
+## Script Options ##
+####################
+
+#set -x
+
+usage ()
+{
+cat << EOF
+######################################################################
+##      script to run varscan
+## Script Options:
+##      -c      <configfile>      -       (REQUIRED)      required config file
+##      -f      <BamfilePath>      -       (REQUIRED)      required file with fullpath to Bamfiles(each line should contain <NORMAL BAMFILE>)
+##      -s      <BamfilePath>      -       (REQUIRED)      required file with fullpath to Bamfiles(each line should contain <TUMOR BAMFILE>)
+##      -r      <rundir>      -       (REQUIRED)      rundir
+##      -e      <email>      -       (REQUIRED)      email
+##      -i      <runid>      -       (REQUIRED)      runid
+##      -h      - Display this usage/help text (No arg)
+#############################################################################
+EOF
+}
+echo "Options specified: $@"
+
+while getopts "c:f:s:r:e:i:h" OPTION; do
+    case $OPTION in
+        c) config=$OPTARG ;;
+		f) fastq=$OPTARG ;;
+		s) somaticfastq=$OPTARG ;;
+		r) rundir=$OPTARG ;;
+		e) EMAIL=$OPTARG ;;
+		i) RUNID=$OPTARG ;;
+		h) usage
+		exit ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "$config" ] || [ -z "$fastq" ] || [ -z "$somaticfastq" ] || [ -z "$rundir" ] || [ -z "$EMAIL" ] || [ -z "$RUNID" ]; then
+    usage
+fi
+
+#loading the config file
+source $config
+source $WORKFLOW_PATH/shared_functions.sh
+if [ -z $SGE_TASK_ID ]
+then
+	SGE_TASK_ID=1
+fi
+
+normalbam=`cat $fastq|head -$SGE_TASK_ID|tail -1`
+tumorbam=`cat $somaticfastq|head -$SGE_TASK_ID|tail -1`
+START=$(date +%s)
+k3=$rundir
+mkdir -p $k3
+cd $k3
+normal_pileup="$SAMTOOLS mpileup -q 1 -f $REF_GENOME $normalbam";
+tumor_pileup="$SAMTOOLS mpileup -q 1 -f $REF_GENOME $tumorbam";
+sampname=`basename $tumorbam|sed -s 's/.bam//g'`
+bash -c "$JAVA -Djava.io.tmpdir=$k3  $GATK_JAVA_OPTION -jar $VARSCAN somatic  <($normal_pileup)  <($tumor_pileup)  $sampname.somatic.varscan"
+check_variable $? $0 $sampname "Varscan Somatic Caller step" $EMAIL $RUNID
+$JAVA -Djava.io.tmpdir=$k3  $GATK_JAVA_OPTION -jar $VARSCAN somaticFilter $sampname.somatic.varscan.snp  --indel-file  $sampname.somatic.varscan.indel $VARSCAN_FILTER_OPTIONS --output-file $sampname.somatic.varscan.snp.filter
+check_variable $? $0 $sampname "Varscan Somatic SNP Filtering step" $EMAIL $RUNID
+
+$JAVA -Djava.io.tmpdir=$k3  $GATK_JAVA_OPTION -jar $VARSCAN somaticFilter $sampname.somatic.varscan.indel  $VARSCAN_FILTER_OPTIONS --output-file $sampname.somatic.varscan.indel.filter
+check_variable $? $0 $sampname "Varscan Somatic INDEL Filtering step" $EMAIL $RUNID
+
+
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "Varscan Somatic Calling  for $sampname took $DIFF seconds"

@@ -1,0 +1,1 @@
+tumor /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1/sample_fastq_files/tumor_R1.fastq.gz /data2/bsi/staff_analysis/m081429/Somatic_workflow_paper/1.1/sample_fastq_files/tumor_R2.fastq.gz
