@@ -857,7 +857,7 @@ EOT
 		grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/gsnap_featurecounts_rpkm.txt
 		mkdir -p $rundir/GENECOUNTS/GSNAP
 		mv $rundir/gsnap_featurecounts_rpkm.txt $rundir/GENECOUNTS/GSNAP/gsnap_featurecounts_rpkm.txt
-		for i in `cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE.txt|sort`
+		for i in `cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE_FEATURE.txt|sort`
 		do
 			i=`echo $i|sed -s 's/.bam/.counts/g'`
 			rpkm=`basename $i|sed -s 's/.RAW.counts/.RPKM/g'`
