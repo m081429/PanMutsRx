@@ -291,7 +291,13 @@ do
 	name=`echo $samp|awk -F ".$align" '{print $1}'`
 	#val=`$SAMTOOLS flagstat $i|cut -f1-3 -d ' '|tr '\n' '\t'|sed -s 's/\t$//g'`
 	val=`cat $dirnam/$basenam.flagstat|cut -f1-3 -d ' '|tr '\n' '\t'|sed -s 's/\t$//g'`
-	basenam1=`echo $basenam|sed -e 's/gatkin.bam/gatkin.splitNC.realign.recaliber.ba/g'`
+	if [[ "$align" =~ "STAR" ]]
+	then
+		basenam1=`echo $basenam|sed -e 's/2STEP.RAW.bam/gatkin.splitNC.realign.recaliber.ba/g'`	
+	else
+		basenam1=`echo $basenam|sed -e 's/RAW.bam/gatkin.splitNC.realign.recaliber.ba/g'`
+	fi 
+	
 	rm $dirnam/$basenam1*
 	#if [[ "$samp" =~ "splitNC.realign.recaliber" ]]
 	#then
@@ -708,16 +714,16 @@ EOT
 	if [[ "$ALIGNERS" =~ "STAR" ]]
 	then
 		#RAW COUNTS
-		fil=`cat $rundir/CONFIG/STAR_NORMAL_UNIQUE.txt|head -1`
+		fil=`cat $rundir/CONFIG/STAR_NORMAL_UNIQUE_FEATURE.txt|head -1`
 		fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 		echo -e "Geneid" > $rundir/star_featurecounts.txt
 		grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/star_featurecounts.txt
 		mkdir -p $rundir/GENECOUNTS/STAR
 		mv $rundir/star_featurecounts.txt $rundir/GENECOUNTS/STAR/star_featurecounts.txt
-		for i in `cat $rundir/CONFIG/STAR_NORMAL_UNIQUE.txt|sort`
+		for i in `cat $rundir/CONFIG/STAR_NORMAL_UNIQUE_FEATURE.txt|sort`
 		do
 			i=`echo $i|sed -s 's/.bam/.counts/g'`
-			raw=`basename $i|sed -s 's/.gatkin.counts/.RAW/g'`
+			raw=`basename $i|sed -s 's/.2STEP.RAW.counts/.RAW/g'`
 			#rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
 			total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 			#echo -e "$raw\t$rpkm" > $i.final
@@ -730,17 +736,17 @@ EOT
 		done
 		echo -e "<tr><td>STAR</td><td><a href=\"GENECOUNTS/STAR/star_featurecounts.txt\" target=\"_blank\" title=\"star_featurecounts\">STAR_GENECOUNTS</a></td></tr>">> Main_Document.html
 		#RPKM COUNTS
-		fil=`cat $rundir/CONFIG/STAR_NORMAL_UNIQUE.txt|head -1`
+		fil=`cat $rundir/CONFIG/STAR_NORMAL_UNIQUE_FEATURE.txt|head -1`
 		fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 		echo -e "Geneid" > $rundir/star_featurecounts_rpkm.txt
 		grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/star_featurecounts_rpkm.txt
 		mkdir -p $rundir/GENECOUNTS/STAR
 		mv $rundir/star_featurecounts_rpkm.txt $rundir/GENECOUNTS/STAR/star_featurecounts_rpkm.txt
-		for i in `cat $rundir/CONFIG/STAR_NORMAL_UNIQUE.txt|sort`
+		for i in `cat $rundir/CONFIG/STAR_NORMAL_UNIQUE_FEATURE.txt|sort`
 		do
 			i=`echo $i|sed -s 's/.bam/.counts/g'`
 			#raw=`basename $i|sed -s 's/.gatkin.counts/.RAW/g'`
-			rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
+			rpkm=`basename $i|sed -s 's/.2STEP.RAW.counts/.RPKM/g'`
 			total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 			#echo -e "$raw\t$rpkm" > $i.final
 			echo -e "$rpkm" > $i.final
@@ -755,16 +761,16 @@ EOT
 		#RAW COUNTS
 		if [ "$PAIRED_FASTQ" != "na" ]
 		then
-			fil=`cat $rundir/CONFIG/STAR_TUMOR.txt|head -1`
+			fil=`cat $rundir/CONFIG/STAR_TUMOR_UNIQUE_FEATURE.txt|head -1`
 			fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 			echo -e "Geneid" > $rundir/star_featurecounts_tumor.txt
 			grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/star_featurecounts_tumor.txt
 			mkdir -p $rundir/GENECOUNTS/STAR
 			mv $rundir/star_featurecounts_tumor.txt $rundir/GENECOUNTS/STAR/star_featurecounts_tumor.txt
-			for i in `cat $rundir/CONFIG/STAR_TUMOR.txt|sort`
+			for i in `cat $rundir/CONFIG/STAR_TUMOR_UNIQUE_FEATURE.txt|sort`
 			do
 				i=`echo $i|sed -s 's/.bam/.counts/g'`
-				raw=`basename $i|sed -s 's/.gatkin.counts/.RAW/g'`
+				raw=`basename $i|sed -s 's/.2STEP.RAW.counts/.RAW/g'`
 				#rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
 				total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 				#echo -e "$raw\t$rpkm" > $i.final
@@ -790,16 +796,16 @@ EOT
 		#RPKM COUNTS
 		if [ "$PAIRED_FASTQ" != "na" ]
 		then
-			fil=`cat $rundir/CONFIG/STAR_TUMOR.txt|head -1`
+			fil=`cat $rundir/CONFIG/STAR_TUMOR_UNIQUE_FEATURE.txt|head -1`
 			fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 			echo -e "Geneid" > $rundir/star_featurecounts_tumor_rpkm.txt
 			grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/star_featurecounts_tumor_rpkm.txt
 			mkdir -p $rundir/GENECOUNTS/STAR
 			mv $rundir/star_featurecounts_tumor_rpkm.txt $rundir/GENECOUNTS/STAR/star_featurecounts_tumor_rpkm.txt
-			for i in `cat $rundir/CONFIG/STAR_TUMOR.txt|sort`
+			for i in `cat $rundir/CONFIG/STAR_TUMOR_UNIQUE_FEATURE.txt|sort`
 			do
 				i=`echo $i|sed -s 's/.bam/.counts/g'`
-				rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
+				rpkm=`basename $i|sed -s 's/.2STEP.RAW.counts/.RPKM/g'`
 				total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 				echo -e "$rpkm" > $i.final
 				grep -v "Geneid" $i|grep -v "Program"|awk -F "\t" -v x=$total '{print (1000000000*$7/(x*$6))}' >> $i.final
@@ -823,16 +829,16 @@ EOT
 	if [[ "$ALIGNERS" =~ "GSNAP" ]]
 	then
 		#RAW COUNTS
-		fil=`cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE.txt|head -1`
+		fil=`cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE_FEATURE.txt|head -1`
 		fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 		echo -e "Geneid" > $rundir/gsnap_featurecounts.txt
 		grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/gsnap_featurecounts.txt
 		mkdir -p $rundir/GENECOUNTS/GSNAP
 		mv $rundir/gsnap_featurecounts.txt $rundir/GENECOUNTS/GSNAP/gsnap_featurecounts.txt
-		for i in `cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE.txt|sort`
+		for i in `cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE_FEATURE.txt|sort`
 		do
 			i=`echo $i|sed -s 's/.bam/.counts/g'`
-			raw=`basename $i|sed -s 's/.gatkin.counts/.RAW/g'`
+			raw=`basename $i|sed -s 's/.RAW.counts/.RAW/g'`
 			#rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
 			total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 			#echo -e "$raw\t$rpkm" > $i.final
@@ -845,7 +851,7 @@ EOT
 		done
 		echo -e "<tr><td>GSNAP</td><td><a href=\"GENECOUNTS/GSNAP/gsnap_featurecounts.txt\" target=\"_blank\" title=\"gsnap_featurecounts\">GSNAP_GENECOUNTS</a></td></tr>">> Main_Document.html
 		#RPKM COUNTS
-		fil=`cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE.txt|head -1`
+		fil=`cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE_FEATURE.txt|head -1`
 		fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 		echo -e "Geneid" > $rundir/gsnap_featurecounts_rpkm.txt
 		grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/gsnap_featurecounts_rpkm.txt
@@ -854,7 +860,7 @@ EOT
 		for i in `cat $rundir/CONFIG/GSNAP_NORMAL_UNIQUE.txt|sort`
 		do
 			i=`echo $i|sed -s 's/.bam/.counts/g'`
-			rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
+			rpkm=`basename $i|sed -s 's/.RAW.counts/.RPKM/g'`
 			total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 			echo -e "$rpkm" > $i.final
 			grep -v "Geneid" $i|grep -v "Program"|awk -F "\t" -v x=$total '{print (1000000000*$7/(x*$6))}' >> $i.final
@@ -867,16 +873,16 @@ EOT
 		#RAW COUNTS
 		if [ "$PAIRED_FASTQ" != "na" ]
 		then
-			fil=`cat $rundir/CONFIG/GSNAP_TUMOR.txt|head -1`
+			fil=`cat $rundir/CONFIG/GSNAP_TUMOR_UNIQUE_FEATURE.txt|head -1`
 			fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 			echo -e "Geneid" > $rundir/gsnap_featurecounts_tumor.txt
 			grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/gsnap_featurecounts_tumor.txt
 			mkdir -p $rundir/GENECOUNTS/GSNAP
 			mv $rundir/gsnap_featurecounts_tumor.txt $rundir/GENECOUNTS/GSNAP/gsnap_featurecounts_tumor.txt
-			for i in `cat $rundir/CONFIG/GSNAP_TUMOR.txt|sort`
+			for i in `cat $rundir/CONFIG/GSNAP_TUMOR_UNIQUE_FEATURE.txt|sort`
 			do
 				i=`echo $i|sed -s 's/.bam/.counts/g'`
-				raw=`basename $i|sed -s 's/.gatkin.counts/.RAW/g'`
+				raw=`basename $i|sed -s 's/.RAW.counts/.RAW/g'`
 				#rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
 				total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 				#echo -e "$raw\t$rpkm" > $i.final
@@ -902,16 +908,16 @@ EOT
 		#RPKM COUNTS
 		if [ "$PAIRED_FASTQ" != "na" ]
 		then
-			fil=`cat $rundir/CONFIG/GSNAP_TUMOR.txt|head -1`
+			fil=`cat $rundir/CONFIG/GSNAP_TUMOR_UNIQUE_FEATURE.txt|head -1`
 			fil=`echo $fil|sed -s 's/.bam/.counts/g'`
 			echo -e "Geneid" > $rundir/gsnap_featurecounts_tumor_rpkm.txt
 			grep -v "Geneid" $fil|grep -v "Program"|cut -f1 >> $rundir/gsnap_featurecounts_tumor_rpkm.txt
 			mkdir -p $rundir/GENECOUNTS/GSNAP
 			mv $rundir/gsnap_featurecounts_tumor_rpkm.txt $rundir/GENECOUNTS/GSNAP/gsnap_featurecounts_tumor_rpkm.txt
-			for i in `cat $rundir/CONFIG/GSNAP_TUMOR.txt|sort`
+			for i in `cat $rundir/CONFIG/GSNAP_TUMOR_UNIQUE_FEATURE.txt|sort`
 			do
 				i=`echo $i|sed -s 's/.bam/.counts/g'`
-				rpkm=`basename $i|sed -s 's/.gatkin.counts/.RPKM/g'`
+				rpkm=`basename $i|sed -s 's/.RAW.counts/.RPKM/g'`
 				total=`grep -v "Status" $i.summary|cut -f2|paste -sd+ -|bc`
 				echo -e "$rpkm" > $i.final
 				grep -v "Geneid" $i|grep -v "Program"|awk -F "\t" -v x=$total '{print (1000000000*$7/(x*$6))}' >> $i.final

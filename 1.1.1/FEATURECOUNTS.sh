@@ -63,6 +63,12 @@ cd $rundir
 k3=$rundir
 sampname=`cat $fastq|head -$SGE_TASK_ID|tail -1|sed -e 's/\t/ /g'`
 countOut=`basename $sampname|sed -s 's/.bam/.counts/g'`
+# if [[ "$CALLERS" =~ "STAR.2STEP.RAW.bam" ]]
+# then
+	# countOut=`basename $sampname|sed -s 's/2STEP.RAW.bam/gatkin.counts/g'`
+# else
+	# countOut=`basename $sampname|sed -s 's/RAW.bam/gatkin.counts/g'`
+# fi
 mkdir $countOut.tmp
 $FEATURECOUNTS $FEATURECOUNTS_OPTION -o $countOut $sampname --tmpDir $countOut.tmp
 rm ./$countOut.tmp/*

@@ -246,7 +246,7 @@ def gsnap_featurecount():
 		
 		for file in fobj:
 			file=file.strip()
-			file=file.replace('gatkin.bam','2STEP.RAW.bam')	
+			file=file.replace('gatkin.bam','RAW.bam')	
 			myfile.write(file+"\n")
 		fobj.close()
 		myfile.close()
