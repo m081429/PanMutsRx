@@ -123,9 +123,9 @@ fi
 FILE="$workflow_dir/SomaticCaller.py"
 if [[ -x "$FILE" ]]
 then
-    echo "workflow directory $workflow_dir is found"
+    echo "workflow directory $FILE is found"
 else
-    echo "workflow directory $workflow_dir not found"
+    echo "workflow directory $FILE not found or not executable"
 	exit
 fi
 
