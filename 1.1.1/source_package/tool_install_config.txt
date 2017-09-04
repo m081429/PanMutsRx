@@ -6,3 +6,5 @@ PERL=/usr/local/biotools/perl/5.16.2-centos6/bin/perl
 PYTHON=/usr/local/biotools/python/3.4.3/bin/python3
 SH=/bin/bash
 QSUB=/home/oge/ge2011.11/bin/linux-x64/qsub
+PYTHON2=/usr/local/biotools/python/2.7.10/bin/python
+PYTHON2_LB_LIB=/usr/local/biotools/python/2.7.10/lib

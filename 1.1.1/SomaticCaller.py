@@ -193,7 +193,10 @@ def gsnap_gatk_preprocess():
 	fobj.close()
 	myfile.close()
 	
-	cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS_GSNAP.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+	if path_dict["CALLERS"].find("OPOSSUM") != -1:
+		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"OPOSSUM.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+	else:
+		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS_GSNAP.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
 	print(cmd)
 	jid=sge_submit(cmd)
 	myfile = open(path_dict["PROCESSDIR"]+'/'+'SGE_JOBID_COMMAND.txt', mode='a')
@@ -203,7 +206,10 @@ def gsnap_gatk_preprocess():
 	'''Tumor sample GSNAP GATK PREPROCESS'''
 	global fastq_tumor_dict
 	if path_dict["PAIRED_FASTQ"].lower() != "na":
-		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS_GSNAP.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+		if path_dict["CALLERS"].find("OPOSSUM") != -1:
+			cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"OPOSSUM.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+		else:
+			cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"GSNAP_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS_GSNAP.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'GSNAP_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
 		print(cmd)
 		jid=sge_submit(cmd)
 		myfile = open(path_dict["PROCESSDIR"]+'/'+'SGE_JOBID_COMMAND.txt', mode='a')
@@ -276,7 +282,10 @@ def Star_gatk_preprocess():
 	fobj.close()
 	myfile.close()
 	
-	cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+	if path_dict["CALLERS"].find("OPOSSUM") != -1:
+		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"OPOSSUM.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+	else:
+		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_normal_dict_uniq)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_NORMAL_UNIQUE.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
 	print(cmd)
 	jid=sge_submit(cmd)
 	myfile = open(path_dict["PROCESSDIR"]+'/'+'SGE_JOBID_COMMAND.txt', mode='a')
@@ -290,8 +299,10 @@ def Star_gatk_preprocess():
 	if path_dict["PAIRED_FASTQ"].lower() != "na":
 		
 		'''Creating input file for GSNAP Somatic preprocess'''
-		
-		cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+		if path_dict["CALLERS"].find("OPOSSUM") != -1:
+			cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"OPOSSUM.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
+		else:
+			cmd=path_dict["QSUB"]+" -m a -j y  -pe threaded 4 "+" -l h_vmem="+path_dict["GATK_MEM"]+" -q "+path_dict["GATK_QUEUE"]+" -N "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR_GATK_PREPROCESS"+" -hold_jid "+"Somatic_caller_Workflow_"+path_dict["WORKFLOW_VERSION"]+"_"+path_dict["RUNID"]+"_"+"STAR_TUMOR"+" -o "+path_dict["SGELOG"]+" -M "+path_dict["EMAIL"]+" -t 1-"+str(fastq_tumor_dict)+":1 "+path_dict["SCRIPTPATH"]+'/'+"GATK_PREPROCESS.sh -c "+path_dict["TOOL_CONFIG"]+" -f "+path_dict["PROCESSDIR"]+'/'+'CONFIG'+'/'+'STAR_TUMOR.txt'+" -r "+path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"STAR"+" -e "+path_dict["EMAIL"]+" -i "+path_dict["RUNID"];
 		print(cmd)
 		jid=sge_submit(cmd)
 		myfile = open(path_dict["PROCESSDIR"]+'/'+'SGE_JOBID_COMMAND.txt', mode='a')

@@ -5,7 +5,7 @@
 ####################
 
 set -x
-
+ulimit -n 3000
 usage ()
 {
 cat << EOF
@@ -92,7 +92,7 @@ then
         rm $rundir/$sampname.process_dir_pass2/Aligned.out.bam 
 fi
 # $SAMTOOLS view -h $rundir/$sampname.process_dir_pass2/Aligned.out.sortedByName.out.bam|$SAMBLASTER $SAMBLASTER_OPTIONS|$SAMTOOLS view -Sbh - > $sampname.bam
-$JAVA -Djava.io.tmpdir=$k3  $GSNAP_JAVA_OPTION -jar $PICARD MarkDuplicates I=$rundir/$sampname.process_dir_pass2/Aligned.out.sortedByName.out.bam O=$sampname.bam  METRICS_FILE=$sampname.dup.metrics.txt
+$JAVA -Djava.io.tmpdir=$k3  $GSNAP_JAVA_OPTION -jar $PICARD MarkDuplicates I=$rundir/$sampname.process_dir_pass2/Aligned.out.sortedByName.out.bam O=$sampname.bam  METRICS_FILE=$sampname.dup.metrics.txt VALIDATION_STRINGENCY=SILENT
 if [ $DEBUG != "YES" ] && [ $DEBUG != "yes" ]
 then
         rm  $rundir/$sampname.process_dir_pass2/Aligned.out.sortedByName.out.bam  

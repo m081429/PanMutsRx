@@ -283,6 +283,28 @@ $TAR -zxvf  $source_dir/bedtools-2.25.0.tar.gz
 cd bedtools2
 make
 
+cd $install_dir
+mkdir OPOSSUM
+mkdir OPOSSUM/PYTHON_PACKAGES
+python_package_dir="$install_dir/OPOSSUM/PYTHON_PACKAGES"
+export PYTHONLIB="$python_package_dir"
+export PYTHONPATH="$python_package_dir"
+cd OPOSSUM
+$TAR -zxvf $source_dir/six-1.10.0.tar.gz
+cd six-1.10.0/
+$PYTHON2 setup.py  install --install-scripts $python_package_dir --install-lib $python_package_dir
+cd $install_dir/OPOSSUM
+$TAR -zxvf $source_dir/Cython-0.26.1.tar.gz
+cd Cython-0.26.1
+$PYTHON2 setup.py  install --install-scripts $python_package_dir --install-lib $python_package_dir
+cd $install_dir/OPOSSUM
+$UNZIP $source_dir/pysam-master.zip
+cd pysam-master
+$PYTHON2 setup.py  install --install-scripts $python_package_dir --install-lib $python_package_dir
+cd $install_dir/OPOSSUM
+$UNZIP $source_dir/Opossum-master.zip
+cd Opossum-master
+
 mkdir $install_dir/STARFUSION/PERLPACKAGE/
 cd $install_dir/STARFUSION/PERLPACKAGE/
 $TAR -zxvf $source_dir/Set-IntervalTree-0.02.tar.gz
@@ -319,6 +341,8 @@ echo "JAVA=$JAVA" > $install_dir/TOOL_INFO.txt
 echo "PYTHON=$PYTHON" >> $install_dir/TOOL_INFO.txt
 echo "PERL=$PERL" >> $install_dir/TOOL_INFO.txt
 echo "SH=$SH" >> $install_dir/TOOL_INFO.txt
+echo "PYTHON2_LB_LIB=$PYTHON2_LB_LIB" >> $install_dir/TOOL_INFO.txt
+echo "PYTHON2=/usr/local/biotools/python/2.7.10/bin/python" >> $install_dir/TOOL_INFO.txt
 echo "WORKFLOW_PATH=$workflow_dir" >> $install_dir/TOOL_INFO.txt
 echo "STAR_FUSION_PERL_PACKAGE=$path_star_fusion" >> $install_dir/TOOL_INFO.txt
 if [[ -x "$QSUB" ]]
@@ -485,6 +509,18 @@ else
 	echo "BOWTIEDIR=$install_dir/BOWTIE/bowtie-1.1.2" >> $install_dir/TOOL_INFO.txt
 fi
 
+#checking opossum
+testp=`$PYTHON2 $install_dir/OPOSSUM/Opossum-master/Opossum.py --help 2>&1|grep -c "Opossum.py"`
+if [ $testp -ne 1 ]
+	then
+	echo "Opossum not installed properly"
+	Tools_not_installed=$Tools_not_installed" Opossum"
+	echo "OPOSSUM=$install_dir/OPOSSUM/Opossum-master/Opossum.py(PLEASE INSTALL PROPERLY)" >> $install_dir/TOOL_INFO.txt
+	echo "OPOSSUM_PYTHON_PACKAGES=$install_dir/OPOSSUM/PYTHON_PACKAGES(PLEASE INSTALL PROPERLY)" >> $install_dir/TOOL_INFO.txt
+else
+	echo "OPOSSUM=$install_dir/OPOSSUM/Opossum-master/Opossum.py" >> $install_dir/TOOL_INFO.txt
+	echo "OPOSSUM_PYTHON_PACKAGES=$install_dir/OPOSSUM/PYTHON_PACKAGES" >> $install_dir/TOOL_INFO.txt
+fi
 
 if [[ $Tools_not_installed == " " ]]; then   
   echo "Tools installed properly"  $Tools_not_installed
@@ -495,6 +531,7 @@ fi
 
 echo "writing extra default paramaters"
 echo 'SAMBLASTER_OPTIONS=" "'  >> $install_dir/TOOL_INFO.txt
+echo 'OPOSSUM_OPTIONS="  --SoftClipsExist True"'  >> $install_dir/TOOL_INFO.txt
 echo 'PICARD_ARG_OPTION="SO=coordinate RGID=group1 RGLB=lib1 RGPL=illumina RGPU=unit1 RGSM=sample1"' >> $install_dir/TOOL_INFO.txt
 echo 'STAR_OPTION="--runThreadN 4"' >> $install_dir/TOOL_INFO.txt
 echo 'STAR_OPTION_STEP2="--chimSegmentMin 12 --chimJunctionOverhangMin 12 --alignSJDBoverhangMin 10 --alignMatesGapMax 200000 --alignIntronMax 200000 --limitBAMsortRAM 31532137230 --outSAMstrandField intronMotif --outSAMtype BAM Unsorted"' >> $install_dir/TOOL_INFO.txt
