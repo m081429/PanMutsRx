@@ -1060,8 +1060,8 @@ def main():
 					myfile.write(path_dict["PROCESSDIR"]+'/'+"ALIGNMENT"+'/'+"GSNAP"+'/'+p[0]+".gatkin.splitNC.realign.recaliber.bam "+"\n")
 				fobj.close()
 				myfile.close()
-				
-			gsnap_gatk_preprocess()
+			if path_dict["CALLERS"].find("GATK") != -1 or path_dict["CALLERS"].find("BCFTOOLS") != -1 or path_dict["CALLERS"].find("STRELKA_SOMATIC") != -1 or path_dict["CALLERS"].find("OPOSSUM") != -1:	
+				gsnap_gatk_preprocess()
 			if path_dict["CALLERS"].find("FEATURECOUNTS") != -1:
 				'''Create GENECOUNTS Directory'''
 				create_dir(path_dict["PROCESSDIR"]+'/'+"GENECOUNTS")
@@ -1155,7 +1155,8 @@ def main():
 				fobj.close()
 				myfile.close()
 				
-			Star_gatk_preprocess()
+			if path_dict["CALLERS"].find("GATK") != -1 or path_dict["CALLERS"].find("BCFTOOLS") != -1 or path_dict["CALLERS"].find("STRELKA_SOMATIC") != -1 or path_dict["CALLERS"].find("OPOSSUM") != -1:	
+				Star_gatk_preprocess()
 			if path_dict["CALLERS"].find("FEATURECOUNTS") != -1:
 				'''Create GENECOUNTS Directory'''
 				create_dir(path_dict["PROCESSDIR"]+'/'+"GENECOUNTS")
