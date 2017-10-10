@@ -70,10 +70,10 @@ cd $rundir/$sampname.process_dir_pass2
 
 if [[ $inputfastq1  =~ gz$ ]]
 then
-	$STAR --genomeDir $STAR_REF --readFilesIn $inputfastq1 $inputfastq2  $STAR_OPTION_STEP2  --readFilesCommand zcat --outSAMunmapped Within
+	$STAR --genomeDir $STAR_REF --readFilesIn $inputfastq1 $inputfastq2  $STAR_OPTION_STEP2  --readFilesCommand zcat --outSAMunmapped Within KeepPairs
 	check_variable $? $0 $sampname "star step2" $EMAIL $RUNID
 else
-	$STAR --genomeDir $STAR_REF --readFilesIn $inputfastq1 $inputfastq2 $STAR_OPTION_STEP2 --outSAMunmapped Within
+	$STAR --genomeDir $STAR_REF --readFilesIn $inputfastq1 $inputfastq2 $STAR_OPTION_STEP2 --outSAMunmapped Within KeepPairs
 	check_variable $? $0 $sampname "star step2" $EMAIL $RUNID
 fi
 
@@ -98,7 +98,7 @@ then
         rm  $rundir/$sampname.process_dir_pass2/Aligned.out.sortedByName.out.bam  
 fi
 
-$JAVA -Djava.io.tmpdir=$k3  $GSNAP_JAVA_OPTION -jar $PICARD AddOrReplaceReadGroups I=$sampname.bam O=$sampname.2STEP.RAW.bam $PICARD_ARG_OPTION TMP_DIR=$k3
+$JAVA -Djava.io.tmpdir=$k3  $GSNAP_JAVA_OPTION -jar $PICARD AddOrReplaceReadGroups I=$sampname.bam O=$sampname.2STEP.RAW.bam $PICARD_ARG_OPTION TMP_DIR=$k3  VALIDATION_STRINGENCY=SILENT
 check_variable $? $0 $sampname "Picard AddorReplace step" $EMAIL $RUNID
 $SAMTOOLS index $sampname.2STEP.RAW.bam
 check_variable $? $0 $sampname "samtools index" $EMAIL $RUNID
