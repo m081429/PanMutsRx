@@ -70,7 +70,7 @@ k3=$rundir
 export PERL5LIB=$STAR_FUSION_PERL_PACKAGE
 if [ "$STARFUSION_MITO_FILTER" == "YES" ]
 then
-	awk -F "\t" '{if($1=="chrM" || $4=="chrM")print $0}' Chimeric.out.junction > Chimeric.out.junction.noMito
+	awk -F "\t" '{if($1!="chrM" && $4!="chrM")print $0}' Chimeric.out.junction > Chimeric.out.junction.noMito
 	#mv Chimeric.out.junction Chimeric.out.junction.all
 	#mv Chimeric.out.junction.noMito Chimeric.out.junction
 else
@@ -90,7 +90,8 @@ head -1  $rundir1/FUSIONS/$sampname1.star_fusion.txt > $rundir1/FUSIONS/$sampnam
 awk -F "\t" -v x=$n1 -v y=$n2 -v z=$n3 '{if($x+$y > 0.1 && $z=="YES_LDAS")print $0}' $rundir1/FUSIONS/$sampname1.star_fusion.txt >> $rundir1/FUSIONS/$sampname1.star_fusion_filtered.txt
 fcount=`cat $rundir1/FUSIONS/$sampname1.star_fusion_filtered.txt|wc -l`
 fcount=$((fcount -1))
-tar -zcvf $rundir/$sampname1.STARFUSIONDIR.tar.gz $rundir/$sampname1.STAR.process_dir_pass2
+cd $rundir/
+tar -zcvf $sampname1.STARFUSIONDIR.tar.gz $sampname1.STAR.process_dir_pass2
 rm $rundir/$sampname1.STAR.process_dir_pass2/*
 rm $rundir/$sampname1.STAR.process_dir_pass2/*/*
 rm $rundir/$sampname1.STAR.process_dir_pass2/*/*/*
